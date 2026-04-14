@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAAF — Premium Footwear</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1a2f45;
+    --navy-light: #243d56;
+    --gold: #c9a84c;
+    --gold-light: #e2c97e;
+    --gold-pale: #f5edd8;
+    --cream: #faf7f2;
+    --text-dark: #0d1b2a;
+    --text-mid: #3a4f63;
+    --text-muted: #7a8fa3;
+    --border: rgba(201,168,76,0.25);
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    padding: 0 48px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 22px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    font-weight: normal;
+    text-transform: uppercase;
+  }
+
+  .logo span {
+    color: var(--gold-light);
+    font-size: 10px;
+    letter-spacing: 3px;
+    display: block;
+    margin-top: 2px;
+    font-family: Arial, sans-serif;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .nav-link {
+    color: var(--text-muted);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: var(--gold); }
+
+  .cart-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--gold);
+    padding: 8px 18px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-family: Arial, sans-serif;
+    transition: all 0.2s;
+  }
+
+  .cart-btn:hover {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+  }
+
+  .cart-count {
+    background: var(--gold);
+    color: var(--navy);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: var(--navy);
+    text-align: center;
+    padding: 64px 24px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 70%);
+  }
+
+  .hero-sub {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    color: var(--white);
+    font-weight: normal;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 440px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 24px auto;
+  }
+
+  /* ── PRODUCT GRID ── */
+  .section-label {
+    text-align: center;
+    padding: 48px 24px 8px;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px;
+    padding: 32px 48px 64px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--white);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(24px) perspective(800px) rotateX(0deg) rotateY(0deg);
+    animation: fadeUp 0.7s forwards;
+    position: relative;
+    border: 1px solid rgba(13,27,42,0.06);
+    transition: transform 0.15s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: transform;
+    cursor: pointer;
+  }
+
+  .card:nth-child(2) { animation-delay: 0.15s; }
+  .card:nth-child(3) { animation-delay: 0.3s; }
+
+  .card.hovered {
+    box-shadow: 0 24px 48px rgba(13,27,42,0.18), 0 0 0 1.5px var(--gold);
+    border-color: var(--gold);
+    z-index: 10;
+  }
+
+  /* shimmer overlay */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 40%, rgba(201,168,76,0.12) 50%, transparent 60%);
+    background-size: 200% 100%;
+    background-position: 200% 0;
+    transition: background-position 0.5s ease;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .card.hovered::after {
+    background-position: -200% 0;
+  }
+
+  /* gold line reveal at bottom */
+  .card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+    transition: width 0.4s ease;
+    z-index: 4;
+  }
+
+  .card.hovered::before { width: 100%; }
+
+  .card-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--navy);
+    color: var(--gold);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    font-family: Arial, sans-serif;
+    z-index: 2;
+  }
+
+  .card-img-wrap {
+    overflow: hidden;
+    height: 260px;
+    background: #f0ebe3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    display: block;
+  }
+
+  .card.hovered img {
+    transform: scale(1.09) translateY(-6px);
+  }
+
+  .card-content {
+    padding: 24px;
+    border-top: 1px solid rgba(13,27,42,0.06);
+  }
+
+  .card-content h3 {
+    font-size: 16px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .card-meta {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+
+  .price {
+    font-size: 18px;
+    color: var(--text-dark);
+    letter-spacing: 1px;
+  }
+
+  .price span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: Arial, sans-serif;
+    margin-right: 2px;
+  }
+
+  .add-btn {
+    background: var(--navy);
+    color: var(--gold);
+    border: none;
+    padding: 10px 22px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .add-btn:hover {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .add-btn.added {
+    background: #1a6b3a;
+    color: #fff;
+  }
+
+  /* ── CART OVERLAY ── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(13,27,42,0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    z-index: 200;
+  }
+
+  .overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ── CART DRAWER ── */
+  .cart-drawer {
+    position: fixed;
+    top: 0; right: -420px;
+    width: 400px;
+    height: 100%;
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    z-index: 300;
+    transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-drawer.active { right: 0; }
+
+  .cart-header {
+    background: var(--navy);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .cart-header h2 {
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-family: Arial, sans-serif;
+  }
+
+  .close-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .close-btn:hover {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+  }
+
+  .cart-empty {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--text-muted);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(13,27,42,0.08);
+  }
+
+  .item-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--gold-pale);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .item-info { flex: 1; }
+
+  .item-name {
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+
+  .item-price {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .item-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .qty-btn {
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dark);
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .qty-btn:hover {
+    background: var(--navy);
+    color: var(--gold);
+    border-color: var(--navy);
+  }
+
+  .qty-num {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    min-width: 20px;
+    text-align: center;
+    color: var(--text-dark);
+  }
+
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px;
+    transition: color 0.15s;
+    font-family: Arial, sans-serif;
+  }
+
+  .remove-btn:hover { color: #c0392b; }
+
+  .cart-footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 28px;
+    background: var(--cream);
+    flex-shrink: 0;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .total-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: Arial, sans-serif;
+  }
+
+  .total-amount {
+    font-size: 20px;
+    color: var(--text-dark);
+  }
+
+  .total-amount small {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: Arial, sans-serif;
+    margin-right: 2px;
+  }
+
+  /* ── CHECKOUT FORM ── */
+  .checkout-section {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .form-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: Arial, sans-serif;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid rgba(13,27,42,0.15);
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    color: var(--text-dark);
+    background: var(--cream);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 14px;
+  }
+
+  .form-input:focus {
+    border-color: var(--gold);
+    background: var(--white);
+  }
+
+  .pay-btn {
+    width: 100%;
+    background: var(--navy);
+    color: var(--gold);
+    border: none;
+    padding: 14px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+
+  .pay-btn:hover {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy);
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+  }
+
+  footer span { color: var(--gold); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RAAF<span>Premium Footwear</span></div>
+  <nav class="nav-right">
+    <a href="#" class="nav-link">Collection</a>
+    <a href="#" class="nav-link">About</a>
+    <button class="cart-btn" onclick="toggleCart()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Cart
+      <div class="cart-count" id="count">0</div>
+    </button>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="hero-sub">New Season Collection</p>
+  <h1>Crafted for Distinction</h1>
+  <div class="hero-divider"></div>
+  <p>Each pair is designed with an uncompromising eye for detail — where heritage meets the modern street.</p>
+</section>
+
+<p class="section-label">Our Collection</p>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-badge">Signature</div>
+    <div class="card-img-wrap">
+      <img src="shoes1.jpg" alt="RAAF Classic White" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'font-size:64px;text-align:center;\'>👟</div>'">
+    </div>
+    <div class="card-content">
+      <h3>RAAF Classic White</h3>
+      <p class="card-meta">Leather Upper · Handcrafted Sole</p>
+      <div class="card-footer">
+        <div class="price"><span>INR</span>500</div>
+        <button class="add-btn" onclick="addToCart(this, 'RAAF Classic White')">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-badge">Bestseller</div>
+    <div class="card-img-wrap">
+      <img src="shoes2.jpg" alt="RAAF Urban Green" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'font-size:64px;text-align:center;\'>👟</div>'">
+    </div>
+    <div class="card-content">
+      <h3>RAAF Urban Green</h3>
+      <p class="card-meta">Canvas Upper · Cushioned Insole</p>
+      <div class="card-footer">
+        <div class="price"><span>INR</span>500</div>
+        <button class="add-btn" onclick="addToCart(this, 'RAAF Urban Green')">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-badge">New Arrival</div>
+    <div class="card-img-wrap">
+      <img src="shoes3.jpg" alt="RAAF Street Blue" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'font-size:64px;text-align:center;\'>👟</div>'">
+    </div>
+    <div class="card-content">
+      <h3>RAAF Street Blue</h3>
+      <p class="card-meta">Suede Upper · Rubber Outsole</p>
+      <div class="card-footer">
+        <div class="price"><span>INR</span>500</div>
+        <button class="add-btn" onclick="addToCart(this, 'RAAF Street Blue')">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 <span>RAAF</span> — All rights reserved &nbsp;·&nbsp; Handcrafted with care
+</footer>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h2>Your Cart</h2>
+    <button class="close-btn" onclick="closeCart()">✕</button>
+  </div>
+
+  <div class="cart-body" id="cartItems">
+    <div class="cart-empty">Your cart is empty.</div>
+  </div>
+
+  <div class="cart-footer">
+    <div class="total-row">
+      <span class="total-label">Order Total</span>
+      <span class="total-amount"><small>INR</small><span id="total">0</span></span>
+    </div>
+  </div>
+
+  <div class="checkout-section">
+    <label class="form-label">Full Name</label>
+    <input class="form-input" placeholder="Your name" id="name">
+    <label class="form-label">Delivery Address</label>
+    <input class="form-input" placeholder="Street, City, PIN" id="address">
+    <button class="pay-btn" onclick="pay()">Proceed to Payment</button>
+  </div>
+</div>
+
+<script>
+  let cart = JSON.parse(localStorage.getItem('raaf_cart') || '{}');
+
+  function addToCart(btn, name) {
+    cart[name] = (cart[name] || 0) + 1;
+    save(); renderCart();
+    btn.textContent = 'Added ✓';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1500);
+  }
+
+  function changeQty(name, delta) {
+    cart[name] = (cart[name] || 0) + delta;
+    if (cart[name] <= 0) delete cart[name];
+    save(); renderCart();
+  }
+
+  function removeItem(name) {
+    delete cart[name];
+    save(); renderCart();
+  }
+
+  function save() { localStorage.setItem('raaf_cart', JSON.stringify(cart)); }
+
+  function renderCart() {
+    const items = Object.keys(cart);
+    const countEl = document.getElementById('count');
+    const totalEl = document.getElementById('total');
+    const bodyEl = document.getElementById('cartItems');
+
+    let total = 0, count = 0;
+    if (items.length === 0) {
+      bodyEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+      countEl.textContent = 0;
+      totalEl.textContent = 0;
+      return;
+    }
+
+    let html = '';
+    items.forEach(name => {
+      const qty = cart[name];
+      count += qty;
+      total += qty * 500;
+      html += `<div class="cart-item">
+        <div class="item-icon">👟</div>
+        <div class="item-info">
+          <div class="item-name">${name}</div>
+          <div class="item-price">INR 500 each</div>
+        </div>
+        <div class="item-controls">
+          <button class="qty-btn" onclick="changeQty('${name}',-1)">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" onclick="changeQty('${name}',1)">+</button>
+          <button class="remove-btn" onclick="removeItem('${name}')">✕</button>
+        </div>
+      </div>`;
+    });
+
+    bodyEl.innerHTML = html;
+    countEl.textContent = count;
+    totalEl.textContent = total.toLocaleString('en-IN');
+  }
+
+  function toggleCart() {
+    document.getElementById('cartDrawer').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+  }
+
+  function closeCart() {
+    document.getElementById('cartDrawer').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+  }
+
+  function pay() {
+    const name = document.getElementById('name').value.trim();
+    const address = document.getElementById('address').value.trim();
+    if (!name || !address) { alert('Please fill in your name and address.'); return; }
+    if (Object.keys(cart).length === 0) { alert('Your cart is empty.'); return; }
+    alert(`Thank you, ${name}! Redirecting to payment gateway...`);
+  }
+
+  renderCart();
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const rotY = ((x - r.width / 2) / (r.width / 2)) * 7;
+      const rotX = -((y - r.height / 2) / (r.height / 2)) * 5;
+      card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-6px) scale(1.02)`;
+    });
+    card.addEventListener('mouseenter', () => card.classList.add('hovered'));
+    card.addEventListener('mouseleave', () => {
+      card.classList.remove('hovered');
+      card.style.transform = '';
+    });
+  });
+</script>
+</body>
+</html>
